@@ -1,0 +1,26 @@
+#!/bin/bash
+
+temp_code=`./get 0x00 w`
+
+### Bash monkey-business integer math to avoid using `bc`
+(( temp_halves = temp_code >> 7 ))
+
+# Handle Negative Numbers.
+if (( temp_halves & 0x100 )); then
+    (( temp_halves -= 0x200 ))
+    temp_sign="-"
+    (( temp_halves_mag = -1 * temp_halves ))
+else
+    temp_sign=" "
+    (( temp_halves_mag = temp_halves ))
+fi
+
+(( temp_whole_mag = temp_halves_mag >> 1 ))
+(( temp_remainder_mag = ( temp_halves_mag & 0x01 ) * 5 ))
+
+temp="$temp_sign"
+temp+="$temp_whole_mag"
+temp+="."
+temp+="$temp_remainder_mag"
+
+echo -e "$temp degC"
